@@ -1,0 +1,140 @@
+services:
+  server-prod:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile-server
+      args:
+        ENV_FILE: ".env.server.prod"
+    container_name: server-prod
+    depends_on:
+      - postgres-prod
+      - redis
+    volumes:
+      - ./backend/upload:/backend/upload
+      - ./backend/src:/backend/src
+      - .env.server.prod:/server/.env
+    networks:
+      - tfd-prod-network
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "512M"
+        reservations:
+          cpus: "0.5"
+          memory: "256M"
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+  client-prod:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile-client
+      args:
+        ENV_FILE: ".env.client.prod"
+    container_name: client-prod
+    depends_on:
+      - server-prod
+    volumes:
+      - .env.client.prod:/app/.env
+    networks:
+      - tfd-prod-network
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "256M"
+        reservations:
+          cpus: "0.25"
+          memory: "128M"
+      restart_policy:
+        condition: on-failure
+  admin-prod:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile-admin
+      args:
+        ENV_FILE: ".env.admin.prod"
+    networks:
+      - tfd-prod-network
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "256M"
+        reservations:
+          cpus: "0.25"
+          memory: "128M"
+      restart_policy:
+        condition: on-failure
+  nginx:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile-nginx
+    container_name: nginx
+    depends_on:
+      - server-prod
+    environment:
+      - NGINX_SERVER_NAME=localhost
+      - HOST_1=server-prod
+      # - HOST_2=tfd-elearning-platform-server-2
+      # - HOST_3=tfd-elearning-platform-server-3
+      - PORT=3000
+      - NGINX_MAX_BODY=100M
+    networks:
+      - tfd-prod-network
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "256M"
+      restart_policy:
+        condition: on-failure
+  postgres-prod:
+    restart: unless-stopped
+    image: postgres:14.12
+    container_name: ${DB_HOST}
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - tfdb:/var/lib/postgresql/data
+    networks:
+      - tfd-prod-network
+    ports:
+      - ${DB_PORT}:5432
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "512M"
+        reservations:
+          cpus: "0.5"
+          memory: "256M"
+  redis:
+    image: redis:6-alpine
+    container_name: redis
+    networks:
+      - tfd-prod-network
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "128M"
+        reservations:
+          cpus: "0.25"
+          memory: "64M"
+      restart_policy:
+        condition: on-failure
+volumes:
+  tfdb:
+networks:
+  tfd-prod-network:
+    external: true

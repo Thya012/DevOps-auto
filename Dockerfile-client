@@ -1,0 +1,15 @@
+FROM --platform=linux/amd64 node:16.20.2-slim
+
+ARG ENV_FILE
+
+WORKDIR /app
+COPY client/package.json client/yarn.lock $ENV_FILE ./
+RUN yarn install
+
+COPY client .
+RUN cp $ENV_FILE .env
+RUN yarn build
+
+EXPOSE 8000
+
+CMD [ "yarn", "start" ]
