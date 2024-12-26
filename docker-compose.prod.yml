@@ -11,8 +11,8 @@ services:
       - postgres-prod
       - redis
     volumes:
-      - ./backend/upload:/backend/upload
-      - ./backend/src:/backend/src
+      - ./backend/upload:/server/upload
+      - ./backend/src:/server/src
       - .env.server.prod:/server/.env
     networks:
       - tfd-prod-network
@@ -53,25 +53,7 @@ services:
           memory: "128M"
       restart_policy:
         condition: on-failure
-  admin-prod:
-    restart: unless-stopped
-    build:
-      context: .
-      dockerfile: Dockerfile-admin
-      args:
-        ENV_FILE: ".env.admin.prod"
-    networks:
-      - tfd-prod-network
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: "256M"
-        reservations:
-          cpus: "0.25"
-          memory: "128M"
-      restart_policy:
-        condition: on-failure
+  
   nginx:
     restart: unless-stopped
     build:
