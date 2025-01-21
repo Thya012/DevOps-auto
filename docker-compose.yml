@@ -1,0 +1,74 @@
+services:
+  nest:
+    build: 
+      context: .
+      dockerfile: Dockerfile-server
+      args:
+        ENV_FILE: ".env.server.prod"
+    container_name: tfd-nest
+    depends_on:
+      - db
+      - redis
+    volumes:
+     - ./backend/upload:/app/upload
+     - ./backend/src:/app/src
+     - ./backend/.env:/app/.env
+     - ./backend/test:/app/test
+    # networks:
+    #   - production-networks
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile-nginx
+    container_name: tfd-nest-nginx
+    depends_on:
+      - nest
+    environment:
+      - NGINX_SERVER_NAME=localhost
+      - NEST_HOST=tfd-nest
+      - NEST_PORT=3000
+      - NGINX_MAX_BODY=100M
+    ports:
+      - 8080:8080
+    # networks:
+    #   - production-networks
+  frontend:
+  
+    container_name: vue-frontend-dev
+   
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      args:
+        ENV_FILE: ".env.client.prod"
+    ports:
+      - 3000:3000
+    # networks:
+    #   - production-networks
+  db:
+    image: postgres:12
+    container_name: tfd-nest-db
+    environment:
+      POSTGRES_DB: nest
+      POSTGRES_USER: nest
+      POSTGRES_PASSWORD: nest
+    ports:
+      - 5432:5432
+    volumes:
+      - postgresdata:/var/lib/postgresql
+    # networks:
+    #   - production-networks
+  redis:
+    image: redis:5
+    container_name: tfd-redis
+    ports:
+      - 6379:6379
+    # networks:
+    #   - production-networks
+volumes:
+  postgresdata:
+   driver: local
+# networks:
+#   production-networks:
+#     name: DevOps_Auto_default
+#     external: true

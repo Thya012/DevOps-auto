@@ -1,6 +1,9 @@
 [submodule "front"]
 	path = front
-	url = https://github.com/Thya012/tfd-nuxt-tailwind-boilerplate.git
+	url = https://github.com/Thya012/front.git
+	branch = master
 [submodule "backend"]
 	path = backend
-	url = https://github.com/Thya012/tfd-nest-boilerplate.git
+
+	url =  https://github.com/Thya012/backend.git
+	branch = master

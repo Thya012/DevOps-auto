@@ -9,7 +9,7 @@ http {
     }
 
     upstream backend {
-        server ${HOST_1}:${PORT};
+        server tfd-nest:3000;
     }
     server {
         listen 80;
