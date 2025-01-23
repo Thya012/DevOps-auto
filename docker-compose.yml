@@ -26,7 +26,7 @@ services:
     environment:
       - NGINX_SERVER_NAME=localhost
       - NEST_HOST=tfdnest
-      - NEST_PORT=6000
+      - NEST_PORT=1000
       - NGINX_MAX_BODY=100M
     ports:
       - 8080:8080
@@ -42,7 +42,7 @@ services:
       args:
         ENV_FILE: ".env.client"
     ports:
-      - 7000:7000
+      - 2000:7000
     # networks:
     #   - production-networks
   db:
