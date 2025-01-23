@@ -24,7 +24,7 @@ jobs:
             whoami
             pwd
             ls
-            cd DevOps_Auto
+            cd DevOps-auto
             git submodule update --remote --merge
             docker compose push
             docker compose up -d --force-recreate
