@@ -1,28 +1,18 @@
 # vim: ft=nginx
-events {
-	worker_connections 1024;
-}
-http {
-    map $http_upgrade $connection_upgrade {
-        default upgrade;
-        ''      close;
-    }
 
-    upstream backend {
-        server tfd-nest:3000;
-    }
-    server {
-        listen 80;
-		server_name ${NGINX_SERVER_NAME};
-		root /app/public;
-		client_max_body_size ${NGINX_MAX_BODY};
+server {
+	listen 8080;
+	server_name ${NGINX_SERVER_NAME};
+	root /app/public;
+	client_max_body_size ${NGINX_MAX_BODY};
 
-        location / {
-            proxy_pass http://backend;
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection $connection_upgrade;
-            proxy_set_header Host $host;
-        }
-    }
+	location / {
+		# try_files $uri =404;
+		proxy_pass  http://${NEST_HOST}:${NEST_PORT};
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Host $server_name;
+		proxy_set_header X-Forwarded-Proto https;
+	}
 }

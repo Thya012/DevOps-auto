@@ -25,6 +25,8 @@ jobs:
             pwd
             ls
             cd DevOps-auto
+            nvm install 16     # Install Node.js version 16
+            nvm use 16
             git submodule update --remote --merge
             docker compose pull
             docker compose up -d --force-recreate
