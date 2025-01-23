@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile-server
       args:
-        ENV_FILE: ".env.server.prod"
+        ENV_FILE: ".env.server"
     container_name: tfd-nest
     depends_on:
       - db
@@ -25,7 +25,7 @@ services:
       - nest
     environment:
       - NGINX_SERVER_NAME=localhost
-      - NEST_HOST=tfd-nest
+      - NEST_HOST=tfdnest
       - NEST_PORT=3000
       - NGINX_MAX_BODY=100M
     ports:
@@ -40,7 +40,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        ENV_FILE: ".env.client.prod"
+        ENV_FILE: ".env.client"
     ports:
       - 3000:3000
     # networks:

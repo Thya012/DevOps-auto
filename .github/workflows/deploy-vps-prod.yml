@@ -10,7 +10,7 @@ jobs:
       - name: Execute SSH commands to reploy containers
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: 62.146.177.21
+          host: ${{root }}
           username: root
           key: ${{ secrets.VPS_SSH_KEY }}
           port: 22
@@ -18,4 +18,13 @@ jobs:
           # username: ${{ secrets.SSH_USER }}
           # key: ${{ secrets.VPS_SSH_KEY }}
           # port: ${{ secrets.SSH_PORT }}
-          script: whoami
+          #script: whoami
+          script: |
+            . ~/.nvm/nvm.sh
+            whoami
+            pwd
+            ls
+            cd DevOps_Auto
+            git submodule update --remote --merge
+            docker compose push
+            docker compose up -d --force-recreate
