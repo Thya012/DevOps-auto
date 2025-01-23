@@ -62,7 +62,7 @@ services:
     image: redis:5
     container_name: tfd-redis
     ports:
-      - 6380:6379
+      - 6380:6380
     # networks:
     #   - production-networks
 volumes:
