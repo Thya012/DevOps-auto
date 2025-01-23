@@ -12,6 +12,6 @@ RUN cp $ENV_FILE .env
 
 RUN yarn build
 
-EXPOSE 3000
+EXPOSE 9000
 
 CMD [ "yarn", "start" ]
