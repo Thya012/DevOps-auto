@@ -26,5 +26,5 @@ jobs:
             ls
             cd DevOps-auto
             git submodule update --remote --merge
-            docker compose push
+            docker compose pull
             docker compose up -d --force-recreate
